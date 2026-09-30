@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Horror YouTube Video Automation Platform</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Inter:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="blood-mist-overlay"></div>
+  <div class="vignette"></div>
+
+  <header class="app-header">
+    <div class="brand">
+      <span class="icon-skull">☠</span>
+      <div class="brand-text">
+        <h1>NIGHTFALL AI</h1>
+        <p class="subtitle">Autonomous YouTube Horror Video Generator</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <span class="badge badge-horror">HORROR V1</span>
+      <span class="badge badge-model">GEMINI 3.8 + VEO</span>
+      <span class="badge badge-resolution">1080P 16:9</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Generator Configuration Card -->
+    <section class="card config-card" id="config-section">
+      <div class="card-header">
+        <h2>Video Parameters</h2>
+        <p>Configure and launch an unattended cinematic horror generation job</p>
+      </div>
+
+      <form id="generator-form">
+        <!-- Topic Input -->
+        <div class="form-group full-width">
+          <label for="topic">Story Topic & Premise <span class="required">*</span></label>
+          <div class="input-with-samples">
+            <textarea id="topic" name="topic" rows="3" required placeholder="e.g. At exactly 3:00 AM every night, a dead woman's phone number calls a security guard inside an abandoned psychiatric hospital."></textarea>
+            <div class="samples-row">
+              <span class="samples-label">Quick Ideas:</span>
+              <button type="button" class="btn-sample" data-sample="At exactly 3:00 AM every night, a dead woman's phone number calls a security guard inside an abandoned psychiatric hospital.">Abandoned Hospital Phone</button>
+              <button type="button" class="btn-sample" data-sample="A deep-sea submarine crew recovers a vintage cassette player repeating an SOS message from their own submarine.">Deep Sea Cassette</button>
+              <button type="button" class="btn-sample" data-sample="A remote forest ranger watches a thermal drone feed of an empty clearing where something cold is moving towards the tower.">Thermal Ranger</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls Grid -->
+        <div class="grid-controls">
+          <div class="form-group">
+            <label for="duration">Target Duration</label>
+            <select id="duration" name="duration">
+              <option value="330" selected>5:30 (330 sec) - Recommended</option>
+              <option value="300">5:00 (300 sec)</option>
+              <option value="360">6:00 (360 sec)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="voice">Narration Voice</label>
+            <select id="voice" name="voice">
+              <option value="AUTO" selected>AUTO (Atmospheric Adaptation)</option>
+              <option value="MALE_FENRIR">MALE (Deep / Gritty - Fenrir)</option>
+              <option value="FEMALE_KORE">FEMALE (Chilling / Calm - Kore)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="visual-mode">Visual Mode</label>
+            <select id="visual-mode" name="visualMode">
+              <option value="HYBRID" selected>HYBRID (AI Video + Animated Stills)</option>
+              <option value="IMAGE_FIRST">IMAGE FIRST (Kinetic Motion + FX)</option>
+              <option value="VIDEO_HEAVY">VIDEO HEAVY (Max Motion)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="quality-mode">Pipeline Mode</label>
+            <select id="quality-mode" name="qualityMode">
+              <option value="BALANCED" selected>BALANCED (High Impact, Safe Cost)</option>
+              <option value="QUALITY">QUALITY (Max Video Allocation)</option>
+              <option value="TEST">TEST (Mock Assets, $0 Zero Cost)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Audio & Feature Toggles -->
+        <div class="toggles-grid">
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-music" name="music" checked>
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">Dynamic Horror Score</span>
+          </label>
+
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-sfx" name="sfx" checked>
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">Atmospheric Sound FX</span>
+          </label>
+
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-captions" name="captions" checked>
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">Cinematic Animated Captions</span>
+          </label>
+
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-youtube" name="youtube" checked>
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">Direct YouTube Upload</span>
+          </label>
+        </div>
+
+        <!-- Security / Execution Settings Collapsible -->
+        <details class="trigger-settings">
+          <summary>⚙ Dispatch & Trigger Configuration (Static Zero-Secret Mode)</summary>
+          <div class="trigger-content">
+            <p class="security-note">
+              🛡 <strong>Security Guarantee:</strong> This static GitHub Pages app never exposes private keys.
+              You can trigger runs locally via CLI, provide a session-only personal token (stored strictly in your browser's transient memory), or use a custom webhook trigger.
+            </p>
+            <div class="trigger-modes">
+              <div class="form-group">
+                <label for="trigger-type">Trigger Method</label>
+                <select id="trigger-type">
+                  <option value="local">Local Development Server / CLI</option>
+                  <option value="direct-pat">Session Personal Token (Direct GitHub API)</option>
+                  <option value="webhook">Serverless Webhook URL</option>
+                  <option value="manual">Manual GitHub Actions Link</option>
+                </select>
+              </div>
+              <div class="form-group" id="pat-input-group" style="display: none;">
+                <label for="session-pat">GitHub PAT (Session Storage only, never committed)</label>
+                <input type="password" id="session-pat" placeholder="github_pat_...">
+              </div>
+              <div class="form-group" id="webhook-input-group" style="display: none;">
+                <label for="webhook-url">Webhook Trigger URL</label>
+                <input type="url" id="webhook-url" placeholder="https://worker.yourdomain.workers.dev/dispatch">
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <!-- Submit Button -->
+        <div class="actions-row">
+          <button type="submit" id="btn-generate" class="btn btn-primary">
+            <span class="btn-glow"></span>
+            <span class="btn-icon">⚡</span>
+            <span class="btn-text">GENERATE CINEMATIC VIDEO</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Active Job Status Card -->
+    <section class="card job-card" id="job-section" style="display: none;">
+      <div class="card-header">
+        <div class="job-meta">
+          <span class="job-badge" id="job-status-pill">PROCESSING</span>
+          <span class="job-id-display" id="job-id-text">JOB-INIT</span>
+        </div>
+        <div class="job-duration-ticker" id="job-elapsed">00:00</div>
+      </div>
+
+      <!-- Real Stage Timeline -->
+      <div class="pipeline-tracker">
+        <div class="step-item" data-step="INIT">
+          <div class="step-indicator"></div>
+          <div class="step-info">
+            <h4>Topic & Job Initialized</h4>
+            <p class="step-sub">Workspace and parameters configured</p>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="STORY">
+          <div class="step-indicator"></div>
+          <div class="step-info">
+            <h4>Story Arc Generated</h4>
+            <p class="step-sub">Gemini 3.8 Flash psychological horror narrative</p>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="CHARACTERS">
+          <div class="step-indicator"></div>
+          <div class="step-info">
+            <h4>Characters & Locations Established</h4>
+            <p class="step-sub">Canonical descriptions locked for visual consistency</p>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="SCENES">
+          <div class="step-indicator"></div>
+          <div class="step-info">
+            <h4>Scene Plan & Hybrid Decisions</h4>
+            <p class="step-sub">Optimal video vs image cadence calculated</p>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="VOICE">
+          <div class="step-indicator"></div>
+          <div class="step-info">
+            <h4>Narration Voiceover Synthesized</h4>
+            <p class="step-sub">Gemini 3.1 Flash expressive speech + master timeline</p>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="VISUALS">
+          <div class="step-indicator"></div>
+          <div class="step-info">
+            <h4>Visuals Generation</h4>
+            <p class="step-sub" id="visuals-progress-sub">Generating scenes...</p>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="AUDIO_MIX">
+          <div class="step-indicator"></div>
+          <div class="step-info">
+            <h4>Soundscape & SFX Placement</h4>
+            <p class="step-sub">Horror ambience, dynamic score, and timed audio cues</p>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="CAPTIONS">
+          <div class="step-indicator"></div>
+          <div class="step-info">
+            <h4>Cinematic Subtitles</h4>
+            <p class="step-sub">Advanced SubStation Alpha styling and sync</p>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="RENDERING">
+          <div class="step-indicator"></div>
+          <div class="step-info">
+            <h4>FFmpeg Master Assembly</h4>
+            <p class="step-sub">1080p 16:9 H.264 / AAC final render</p>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="QA">
+          <div class="step-indicator"></div>
+          <div class="step-info">
+            <h4>Quality Control & Validation</h4>
+            <p class="step-sub">FFprobe duration, black frame, and stream check</p>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="YOUTUBE">
+          <div class="step-indicator"></div>
+          <div class="step-info">
+            <h4>Metadata & YouTube Publishing</h4>
+            <p class="step-sub" id="youtube-sub">SEO optimization and upload</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Job Console Logs -->
+      <div class="console-box">
+        <div class="console-header">
+          <span>PIPELINE LOGS</span>
+          <button class="btn-clear" id="btn-copy-logs">Copy Logs</button>
+        </div>
+        <pre class="console-output" id="console-output">Waiting for generation worker...</pre>
+      </div>
+
+      <!-- Final Completion Box -->
+      <div class="completion-box" id="completion-box" style="display: none;">
+        <div class="completion-celebration">
+          <div class="completion-icon">✓</div>
+          <h3>VIDEO GENERATION COMPLETE</h3>
+          <p id="completion-summary">Master 1080p horror video successfully produced and verified.</p>
+        </div>
+        <div class="completion-actions">
+          <a href="#" id="link-download" class="btn btn-secondary" download>⬇ DOWNLOAD MASTER MP4</a>
+          <a href="#" id="link-youtube" target="_blank" rel="noopener" class="btn btn-primary" style="display: none;">▶ WATCH ON YOUTUBE</a>
+          <button type="button" id="btn-new-video" class="btn btn-outline">CREATE ANOTHER VIDEO</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-content">
+      <p>Nightfall AI Video Automation &bull; Powered by Google Gemini 3.8 Flash, Veo & FFmpeg</p>
+      <div class="footer-links">
+        <a href="https://github.com/Vipul2345/Horror-YT-Video" target="_blank" rel="noopener">GitHub Repository</a>
+        <span>&bull;</span>
+        <a href="https://github.com/Vipul2345/Horror-YT-Video/actions" target="_blank" rel="noopener">Actions Dashboard</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

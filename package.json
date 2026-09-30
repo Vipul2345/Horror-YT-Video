@@ -1,0 +1,39 @@
+{
+  "name": "horror-yt-video",
+  "version": "1.0.0",
+  "description": "Autonomous AI Horror YouTube Video Generation Platform",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "node dist/cli/index.js",
+    "test-pipeline": "tsx src/cli/test-pipeline.ts",
+    "generate": "tsx src/cli/generate.ts",
+    "render": "tsx src/cli/render.ts",
+    "validate": "tsx src/cli/validate.ts",
+    "serve": "npx serve public -l 3000"
+  },
+  "keywords": [
+    "ai",
+    "horror",
+    "video-generator",
+    "youtube-automation",
+    "gemini",
+    "ffmpeg"
+  ],
+  "author": "Vipul Anand",
+  "license": "MIT",
+  "dependencies": {
+    "@google/genai": "^2.3.0",
+    "dotenv": "^16.4.7",
+    "googleapis": "^144.0.0",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}

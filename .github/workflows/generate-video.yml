@@ -1,0 +1,95 @@
+name: Generate Horror Video
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Horror Story Topic / Premise'
+        required: true
+        type: string
+        default: "At exactly 3:00 AM every night, a dead woman's phone number calls a security guard inside an abandoned psychiatric hospital."
+      duration:
+        description: 'Target Video Duration in seconds (300-360)'
+        required: false
+        type: string
+        default: '330'
+      voice:
+        description: 'Narration Voice (AUTO, MALE_FENRIR, FEMALE_KORE)'
+        required: false
+        type: string
+        default: 'AUTO'
+      visual_mode:
+        description: 'Visual Engine Strategy (HYBRID, IMAGE_FIRST, VIDEO_HEAVY)'
+        required: false
+        type: string
+        default: 'HYBRID'
+      quality_mode:
+        description: 'Execution Mode (TEST, BALANCED, QUALITY)'
+        required: false
+        type: string
+        default: 'BALANCED'
+  repository_dispatch:
+    types: [generate_video]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  build-and-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install FFmpeg with libass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Execute Video Pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_PRIVACY_STATUS: ${{ secrets.YOUTUBE_PRIVACY_STATUS || 'private' }}
+          COST_MODE: ${{ github.event.inputs.quality_mode || github.event.client_payload.quality_mode || 'BALANCED' }}
+          MAX_VEO_SECONDS: '40'
+          MAX_VEO_SCENES: '5'
+          MAX_TOTAL_COST_USD: '10.0'
+          OUTPUT_DIRECTORY: './output'
+        run: |
+          TOPIC="${{ github.event.inputs.topic || github.event.client_payload.topic }}"
+          DURATION="${{ github.event.inputs.duration || github.event.client_payload.duration || '330' }}"
+          VOICE="${{ github.event.inputs.voice || github.event.client_payload.voice || 'AUTO' }}"
+          VISUAL_MODE="${{ github.event.inputs.visual_mode || github.event.client_payload.visual_mode || 'HYBRID' }}"
+          QUALITY="${{ github.event.inputs.quality_mode || github.event.client_payload.quality_mode || 'BALANCED' }}"
+
+          node dist/cli/generate.js --topic="$TOPIC" --duration="$DURATION" --voice="$VOICE" --visual_mode="$VISUAL_MODE" --quality="$QUALITY"
+
+      - name: Upload Video Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: horror-video-output
+          path: |
+            output/**/final.mp4
+            jobs/**/metadata.json
+            jobs/**/status.json
+            jobs/**/logs.txt
+            jobs/**/thumbnail/thumbnail.png
+          retention-days: 7

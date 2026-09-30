@@ -1,0 +1,26 @@
+# Dependency directories
+node_modules/
+
+# Environment and secrets
+.env
+*.local
+*.key
+*.pem
+
+# Build output
+dist/
+build/
+
+# Job artifacts and rendered videos
+jobs/
+output/
+media/
+temp/
+*.mp4
+*.wav
+*.aac
+*.ass
+
+# OS files
+.DS_Store
+Thumbs.db
