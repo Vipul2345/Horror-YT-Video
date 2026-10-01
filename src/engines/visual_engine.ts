@@ -20,14 +20,15 @@ export class VisualEngine {
     const renderedClips: string[] = [];
     const totalScenes = timeline.scenes.length;
 
-    // 1. Generate Canonical Reference Assets (Rule 7)
+    // 1. Generate Canonical Reference Assets (Rule 7) - only needed if Veo video model is active
     const refDir = path.join(this.job.dirs.visualsDir, 'references');
     if (!fs.existsSync(refDir)) fs.mkdirSync(refDir, { recursive: true });
 
     const characterRefMap = new Map<string, string>();
     const locationRefMap = new Map<string, string>();
 
-    if (story) {
+    const isVeoActive = visualMode !== 'IMAGE_FIRST' && visualMode !== 'IMAGE_MOTION';
+    if (story && isVeoActive) {
       this.job.logger.info('VISUALS', 'Generating canonical reference images for characters and locations...');
 
       // Characters
@@ -64,7 +65,7 @@ export class VisualEngine {
     for (let i = 0; i < totalScenes; i++) {
       const scene = timeline.scenes[i];
       const duration = scene.estimated_duration_seconds || 4.0;
-      const isVideoCandidate = scene.visual_type === 'VIDEO' && visualMode !== 'IMAGE_FIRST';
+      const isVideoCandidate = scene.visual_type === 'VIDEO' && visualMode !== 'IMAGE_FIRST' && visualMode !== 'IMAGE_MOTION';
 
       this.job.status.update({
         current_scene: i + 1,
@@ -102,8 +103,19 @@ export class VisualEngine {
         const imageOutputPath = path.join(this.job.dirs.visualsDir, `${scene.scene_id}.png`);
         const animVideoPath = path.join(this.job.dirs.visualsDir, `${scene.scene_id}_anim.mp4`);
 
-        this.job.logger.info('VISUALS', `Scene ${scene.scene_id} [${i + 1}/${totalScenes}]: Generating atmospheric still image...`);
-        await this.imageProvider.generateImage(scene.visual_prompt, imageOutputPath);
+        try {
+          this.job.logger.info('VISUALS', `Scene ${scene.scene_id} [${i + 1}/${totalScenes}]: Generating atmospheric still image...`);
+          await this.imageProvider.generateImage(scene.visual_prompt, imageOutputPath);
+        } catch (imgErr: any) {
+          this.job.logger.warn('VISUALS', `Image generation failed for ${scene.scene_id}: ${imgErr.message}. Generating resilient atmospheric frame...`);
+          const safeBackupPath = path.resolve(imageOutputPath).replace(/\\/g, '/');
+          try {
+            const { execSync } = await import('child_process');
+            execSync(`ffmpeg -y -f lavfi -i "color=c=0x08090c:s=1920x1080:d=1" -vf "noise=alls=15:allf=t+u,vignette=PI/3" -frames:v 1 "${safeBackupPath}"`, { stdio: 'pipe' });
+          } catch (e: any) {
+            this.job.logger.error('VISUALS', `Fallback frame failed: ${e.message}`);
+          }
+        }
 
         this.job.logger.info('VISUALS', `Scene ${scene.scene_id}: Animating image into 1080p clip (${duration}s, motion: ${scene.motion_type})...`);
         clipPath = this.motionEngine.animateImage(

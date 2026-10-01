@@ -308,8 +308,9 @@ document.addEventListener('DOMContentLoaded', () => {
       jobStatusPill.style.color = '#000';
       completionBox.style.display = 'block';
 
-      if (data.video_path) {
-        linkDownload.href = data.video_path;
+      if (data.video_path || activeJobId) {
+        linkDownload.href = `/jobs/${activeJobId}/render/final.mp4`;
+        linkDownload.setAttribute('download', `${activeJobId}.mp4`);
         linkDownload.style.display = 'inline-flex';
       }
       if (data.youtube_url) {
