@@ -46,6 +46,39 @@ document.addEventListener('DOMContentLoaded', () => {
     webhookInputGroup.style.display = (val === 'webhook') ? 'block' : 'none';
   });
 
+  // Toggle custom model inputs
+  const imgSelect = document.getElementById('image-model');
+  const customImgInput = document.getElementById('custom-image-model');
+  if (imgSelect && customImgInput) {
+    imgSelect.addEventListener('change', () => {
+      customImgInput.style.display = (imgSelect.value === 'custom') ? 'block' : 'none';
+      if (imgSelect.value === 'custom') customImgInput.focus();
+    });
+  }
+
+  const storySelect = document.getElementById('story-model');
+  const customStoryInput = document.getElementById('custom-story-model');
+  if (storySelect && customStoryInput) {
+    storySelect.addEventListener('change', () => {
+      customStoryInput.style.display = (storySelect.value === 'custom') ? 'block' : 'none';
+      if (storySelect.value === 'custom') customStoryInput.focus();
+    });
+  }
+
+  const openrouterKeyInput = document.getElementById('openrouter-key-override');
+  if (openrouterKeyInput) {
+    if (localStorage.getItem('openrouter_key_override')) {
+      openrouterKeyInput.value = localStorage.getItem('openrouter_key_override');
+    }
+    openrouterKeyInput.addEventListener('change', () => {
+      if (openrouterKeyInput.value.trim()) {
+        localStorage.setItem('openrouter_key_override', openrouterKeyInput.value.trim());
+      } else {
+        localStorage.removeItem('openrouter_key_override');
+      }
+    });
+  }
+
   // Handle Form Submission
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -55,6 +88,21 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Please enter a horror topic.');
       return;
     }
+
+    const imageModelSelect = document.getElementById('image-model');
+    const customImageModel = document.getElementById('custom-image-model');
+    const selectedImageModel = (imageModelSelect.value === 'custom')
+      ? customImageModel.value.trim() || 'inclusionai/ming-image-0.1-design'
+      : imageModelSelect.value;
+
+    const storyModelSelect = document.getElementById('story-model');
+    const customStoryModel = document.getElementById('custom-story-model');
+    const selectedStoryModel = (storyModelSelect.value === 'custom')
+      ? customStoryModel.value.trim() || 'gemini-3.5-flash-lite'
+      : storyModelSelect.value;
+
+    const voiceEngineSelect = document.getElementById('voice-engine');
+    const openrouterKeyOverride = document.getElementById('openrouter-key-override').value.trim();
 
     const payload = {
       job_id: `JOB-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
@@ -67,6 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
       sfx: document.getElementById('toggle-sfx').checked,
       captions: document.getElementById('toggle-captions').checked,
       youtube: document.getElementById('toggle-youtube').checked,
+      image_model: selectedImageModel,
+      story_model: selectedStoryModel,
+      voice_engine: voiceEngineSelect ? voiceEngineSelect.value : 'edge-tts',
+      openrouter_key: openrouterKeyOverride || undefined,
       created_at: new Date().toISOString()
     };
 

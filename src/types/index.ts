@@ -14,6 +14,11 @@ export interface GenerationInput {
   sfx: boolean;
   captions: boolean;
   youtube: boolean;
+  image_model?: string;
+  story_model?: string;
+  voice_engine?: 'edge-tts' | 'gemini';
+  openrouter_key?: string;
+  gemini_key?: string;
   created_at: string;
 }
 

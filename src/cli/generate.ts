@@ -30,6 +30,9 @@ function parseArgs(): GenerationInput {
     sfx: parsed['sfx'] !== 'false',
     captions: parsed['captions'] !== 'false',
     youtube: parsed['youtube'] === 'true',
+    image_model: parsed['image_model'] || config.openrouterImageModel,
+    story_model: parsed['story_model'] || config.storyModel,
+    voice_engine: (parsed['voice_engine'] as any) || config.voiceEngine,
     created_at: new Date().toISOString()
   };
 }

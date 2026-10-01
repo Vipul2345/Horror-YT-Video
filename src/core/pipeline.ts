@@ -24,6 +24,8 @@ import {
 import { GeminiStoryProvider } from '../providers/gemini/story.js';
 import { GeminiVoiceProvider } from '../providers/gemini/voice.js';
 import { GeminiImageProvider } from '../providers/gemini/image.js';
+import { EdgeTTSVoiceProvider } from '../providers/voice/edge_tts.js';
+import { OpenRouterImageProvider } from '../providers/openrouter/image.js';
 import { VeoVideoProvider } from '../providers/veo/index.js';
 import { YouTubePublisher } from '../providers/youtube/index.js';
 import { config, validateApiKeys } from '../config/index.js';
@@ -48,17 +50,31 @@ export class VideoPipeline {
       if (!isTestMode) {
         validateApiKeys(input.quality_mode);
         // Programmatically resolve and verify models from Google API
-        const resolved = await ModelResolver.resolve(config.geminiApiKey, this.job.logger);
-        config.storyModel = resolved.storyModel;
+        const resolved = await ModelResolver.resolve(input.gemini_key || config.geminiApiKey, this.job.logger);
+        config.storyModel = input.story_model || resolved.storyModel;
         config.videoModel = resolved.videoModel;
-        config.imageModel = resolved.imageModel;
-        this.job.logger.info('PIPELINE', `Resolved models: Story=${config.storyModel}, Video=${config.videoModel}, Image=${config.imageModel}`);
+        config.imageModel = input.image_model || resolved.imageModel;
+        this.job.logger.info('PIPELINE', `Active models: Story=${config.storyModel}, Video=${config.videoModel}, Image=${config.imageModel}`);
       }
 
-      // 1. Select Providers based on Cost Mode
+      // 1. Select Providers based on Cost Mode and User Selection
+      const openrouterKey = input.openrouter_key || config.openrouterApiKey;
+      const selectedImageModel = input.image_model || config.openrouterImageModel;
+      const selectedVoiceEngine = input.voice_engine || config.voiceEngine;
+
       const storyProvider = isTestMode ? new MockStoryProvider() : new GeminiStoryProvider(this.job.logger);
-      const voiceProvider = isTestMode ? new MockVoiceProvider() : new GeminiVoiceProvider(this.job.logger);
-      const imageProvider = isTestMode ? new MockImageProvider() : new GeminiImageProvider(this.job.logger);
+      const voiceProvider = isTestMode
+        ? new MockVoiceProvider()
+        : selectedVoiceEngine === 'edge-tts'
+        ? new EdgeTTSVoiceProvider(this.job.logger)
+        : new GeminiVoiceProvider(this.job.logger);
+
+      const imageProvider = isTestMode
+        ? new MockImageProvider()
+        : openrouterKey && config.imageProvider === 'openrouter'
+        ? new OpenRouterImageProvider(openrouterKey, selectedImageModel, this.job.logger)
+        : new GeminiImageProvider(this.job.logger);
+
       const videoProvider = isTestMode ? new MockVideoProvider() : new VeoVideoProvider(this.job.logger);
       const musicProvider = new MockMusicProvider(); // Royalty-free atmospheric score
       const sfxProvider = new MockSFXProvider();

@@ -90,6 +90,53 @@
           </div>
         </div>
 
+        <!-- AI Models & Engines Selection -->
+        <div class="card-subheader" style="margin-top: 1.5rem; margin-bottom: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem;">
+          <h3 style="font-size: 1.05rem; color: #ff3344; margin-bottom: 0.25rem;">🤖 AI Models & Engine Selection</h3>
+          <p style="font-size: 0.82rem; color: #8892b0; margin: 0;">Select your preferred 2D image generator, story model, and neural voice</p>
+        </div>
+
+        <div class="grid-controls">
+          <div class="form-group">
+            <label for="image-model">2D Image Generation Model</label>
+            <select id="image-model" name="imageModel">
+              <option value="inclusionai/ming-image-0.1-design" selected>inclusionAI: Ming Image 0.1 Design (Free on OpenRouter)</option>
+              <option value="inclusionai/ming-image-0.1-design-layer">inclusionAI: Ming Image 0.1 Design Layer (Free on OpenRouter)</option>
+              <option value="bytedance-seed/seedream-5-0-lite">ByteDance: SeeDream 5.0 Lite (Free on OpenRouter)</option>
+              <option value="black-forest-labs/flux.2-klein-4b">FLUX.2 Klein 4B (Free on OpenRouter)</option>
+              <option value="google/gemini-2.5-flash-image">Google: Gemini 2.5 Flash Image (~3.8¢/img)</option>
+              <option value="qwen/qwen-image-3">Qwen: Image 3 (OpenRouter)</option>
+              <option value="custom">Custom Model ID...</option>
+            </select>
+            <input type="text" id="custom-image-model" placeholder="author/model-name" style="display:none; margin-top: 6px;">
+          </div>
+
+          <div class="form-group">
+            <label for="story-model">Story & Script Model</label>
+            <select id="story-model" name="storyModel">
+              <option value="gemini-3.5-flash-lite" selected>Google: Gemini 3.5 Flash Lite (Free & Fast)</option>
+              <option value="gemini-3.5-flash">Google: Gemini 3.5 Flash (High Detail)</option>
+              <option value="gemini-3.8-flash">Google: Gemini 3.8 Flash</option>
+              <option value="deepseek/deepseek-v4-flash">DeepSeek: V4 Flash (OpenRouter Free)</option>
+              <option value="custom">Custom Story Model...</option>
+            </select>
+            <input type="text" id="custom-story-model" placeholder="model-id" style="display:none; margin-top: 6px;">
+          </div>
+
+          <div class="form-group">
+            <label for="voice-engine">TTS Voice Engine</label>
+            <select id="voice-engine" name="voiceEngine">
+              <option value="edge-tts" selected>Microsoft Edge Neural (100% Free - Deep Horror Voice)</option>
+              <option value="gemini">Google Gemini TTS (Preview)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="openrouter-key-override">OpenRouter API Key (Optional)</label>
+            <input type="password" id="openrouter-key-override" placeholder="sk-or-v1-... (leave blank to use server .env)">
+          </div>
+        </div>
+
         <!-- Audio & Feature Toggles -->
         <div class="toggles-grid">
           <label class="toggle-control">

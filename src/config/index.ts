@@ -5,6 +5,10 @@ dotenv.config();
 
 export interface AppConfig {
   geminiApiKey: string;
+  openrouterApiKey: string;
+  openrouterImageModel: string;
+  imageProvider: string;
+  voiceEngine: 'edge-tts' | 'gemini';
   storyModel: string;
   voiceModel: string;
   imageModel: string;
@@ -25,7 +29,11 @@ export interface AppConfig {
 
 export const config: AppConfig = {
   geminiApiKey: process.env.GEMINI_API_KEY || '',
-  storyModel: process.env.STORY_MODEL || 'gemini-3.8-flash',
+  openrouterApiKey: process.env.OPENROUTER_API_KEY || '',
+  openrouterImageModel: process.env.OPENROUTER_IMAGE_MODEL || 'inclusionai/ming-image-0.1-design',
+  imageProvider: process.env.IMAGE_PROVIDER || 'openrouter',
+  voiceEngine: (process.env.VOICE_ENGINE as 'edge-tts' | 'gemini') || 'edge-tts',
+  storyModel: process.env.STORY_MODEL || 'gemini-3.5-flash-lite',
   voiceModel: process.env.VOICE_MODEL || 'gemini-3.1-flash-tts-preview',
   imageModel: process.env.IMAGE_MODEL || 'gemini-3.1-flash-image',
   videoModel: process.env.VIDEO_MODEL || 'veo-3.1-fast-generate-preview',

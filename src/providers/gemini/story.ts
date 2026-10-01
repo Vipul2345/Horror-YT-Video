@@ -35,13 +35,26 @@ Generate a structured horror story in JSON format with canonical characters, can
 
     while (retries > 0) {
       try {
-        const response = await this.client.interactions.create({
-          model: config.storyModel,
-          input: `${systemPrompt}\n\n${userPrompt}`,
-          response_format: { type: 'json' }
-        });
+        let outputText = '';
+        try {
+          const res = await this.client.models.generateContent({
+            model: config.storyModel,
+            contents: `${systemPrompt}\n\n${userPrompt}`,
+            config: {
+              responseMimeType: 'application/json'
+            }
+          });
+          outputText = res.text || '';
+        } catch (innerErr) {
+          // Fallback to interactions API
+          const response: any = await this.client.interactions.create({
+            model: config.storyModel,
+            input: `${systemPrompt}\n\n${userPrompt}`,
+            response_format: { type: 'json' }
+          });
+          outputText = response.output_text || '';
+        }
 
-        const outputText = response.output_text;
         if (!outputText) {
           throw new Error('Empty response from story model.');
         }

@@ -49,12 +49,23 @@ Return valid JSON with:
   "hashtags": ["#HorrorStories", "#Scary", "#Horror"],
   "category_id": "24"
 }`;
-        const res: any = await client.interactions.create({
-          model: config.storyModel,
-          input: prompt,
-          response_format: { type: 'json' }
-        });
-        const parsed = JSON.parse(res.output_text.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim());
+        let rawJson = '';
+        try {
+          const res = await client.models.generateContent({
+            model: config.storyModel,
+            contents: prompt,
+            config: { responseMimeType: 'application/json' }
+          });
+          rawJson = res.text || '';
+        } catch {
+          const res: any = await client.interactions.create({
+            model: config.storyModel,
+            input: prompt,
+            response_format: { type: 'json' }
+          });
+          rawJson = res.output_text || '';
+        }
+        const parsed = JSON.parse(rawJson.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim());
         return {
           title: parsed.title || story.title,
           description: parsed.description || `${story.hook}\n\n${story.logline}\n\nOriginal horror story produced by Nightfall AI.`,
