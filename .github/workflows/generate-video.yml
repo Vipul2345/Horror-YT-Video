@@ -53,7 +53,8 @@ jobs:
       - name: Install FFmpeg with libass
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          sudo apt-get install -y ffmpeg python3-pip
+          pip3 install --break-system-packages edge-tts
 
       - name: Install Dependencies
         run: npm ci
@@ -64,6 +65,7 @@ jobs:
       - name: Execute Video Pipeline
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
@@ -79,8 +81,11 @@ jobs:
           VOICE="${{ github.event.inputs.voice || github.event.client_payload.voice || 'AUTO' }}"
           VISUAL_MODE="${{ github.event.inputs.visual_mode || github.event.client_payload.visual_mode || 'HYBRID' }}"
           QUALITY="${{ github.event.inputs.quality_mode || github.event.client_payload.quality_mode || 'BALANCED' }}"
+          IMAGE_MODEL="${{ github.event.inputs.image_model || github.event.client_payload.image_model || 'inclusionai/ming-image-0.1-design' }}"
+          STORY_MODEL="${{ github.event.inputs.story_model || github.event.client_payload.story_model || 'gemini-3.5-flash-lite' }}"
+          VOICE_ENGINE="${{ github.event.inputs.voice_engine || github.event.client_payload.voice_engine || 'edge-tts' }}"
 
-          node dist/cli/generate.js --topic="$TOPIC" --duration="$DURATION" --voice="$VOICE" --visual_mode="$VISUAL_MODE" --quality="$QUALITY"
+          node dist/cli/generate.js --topic="$TOPIC" --duration="$DURATION" --voice="$VOICE" --visual_mode="$VISUAL_MODE" --quality="$QUALITY" --image_model="$IMAGE_MODEL" --story_model="$STORY_MODEL" --voice_engine="$VOICE_ENGINE"
 
       - name: Upload Video Artifacts
         uses: actions/upload-artifact@v4
